@@ -1,10 +1,3 @@
-var React = require('react');
-var ReactDOM = require('react-dom');
-
-ReactDOM.render(
-  <h1>Hello, world!</h1>,
-  document.getElementById('example'));
-
 var userData = {};
 function addTask() {
   var task = document.getElementById("taskInput").value;
@@ -17,30 +10,48 @@ function addTask() {
     message('Error: No Priority specified');
     return;
   }
+  if(document.getElementById(priority+task)){
+    document.getElementById('errors').innerHTML = "duplicate";
+  } else {
 
-  var node = document.createElement("li");
-  var textNode = document.createTextNode(task);
-  node.appendChild(textNode)
-        
-  switch(priority){
-      case '1':
-        document.getElementById('tasks1').appendChild(node);
-        break;
-      case '2':
-        document.getElementById('tasks2').appendChild(node);
-        break;
-      case '3':
-        document.getElementById('tasks3').appendChild(node);
-        break;
-      case '4':
-        document.getElementById('tasks4').appendChild(node);
-        break;
-    }
-    var obj = {};
-    obj[task] = priority;
-    chrome.storage.sync.set(obj);
-    document.getElementById('taskInput').value = '';
-    document.getElementById('priority').value = 1;
+    var node = document.createElement("li");
+    node.setAttribute('id', priority+task);
+    var span = document.createElement("span");
+    var deleteButton = document.createElement("button");
+    var textNode = document.createTextNode(task);
+    var xText = document.createTextNode('X');
+    deleteButton.appendChild(xText);
+    deleteButton.onclick = (function() {
+      
+        deleteTask(task);
+      
+    });
+    span.appendChild(textNode);
+    span.appendChild(deleteButton);
+    node.appendChild(span);
+                
+    switch(priority){
+        case '1':
+          document.getElementById('tasks1').appendChild(node);
+          break;
+        case '2':
+          document.getElementById('tasks2').appendChild(node);
+          break;
+        case '3':
+          document.getElementById('tasks3').appendChild(node);
+          break;
+        case '4':
+          document.getElementById('tasks4').appendChild(node);
+          break;
+      }
+      var obj = {};
+      obj[task] = priority;
+      chrome.storage.sync.set(obj);
+      document.getElementById('errors').innerHTML = "";
+      document.getElementById('taskInput').value = '';
+      document.getElementById('priority').value = 1;
+  }
+
 }
 
 chrome.storage.onChanged.addListener(function(changes, namespace) {
@@ -56,14 +67,30 @@ chrome.storage.onChanged.addListener(function(changes, namespace) {
 })
 
 function deleteTask(toDeleteTask) {
-  var p1 = new Promise (
-      function(resolve, reject) {
-        chrome.storage.sync.remove(toDeleteTask, function(result) {
-          console.log(result);
-
-        });
+  //Remove element from ui
+  var removeElementFromUI = new Promise(
+    function(resolve, reject) {
+      chrome.storage.sync.get(toDeleteTask, function(result){
+        resolve(result);
       });
+    })
+  removeElementFromUI.then(function(taskObject) {
+    for(key in taskObject){
+      if(document.getElementById(taskObject[key] + key)){
+        var child = document.getElementById(taskObject[key] + key);
+        child.parentNode.removeChild(child);
+      }
+    }
+  }).then( new Promise(
+      function(resolve, reject) {
+        chrome.storage.sync.remove(toDeleteTask);
+        resolve();
+      })
+  );
+  document.getElementById('errors').innerHTML = "";
 }
+
+
 
 
 function loadUserData() {
@@ -76,7 +103,6 @@ function loadUserData() {
     p1.then(function(userTasks){
         for(task in userTasks){
           var priority = userTasks[task];
-          console.log(task);
           if(!task) {
             message('Error: No task specified');
             return;
@@ -86,10 +112,21 @@ function loadUserData() {
             return;
           }
 
+
           var node = document.createElement("li");
+          node.setAttribute('id', priority+task);
+          var span = document.createElement("span");
+          var deleteButton = document.createElement("button");
           var textNode = document.createTextNode(task);
-          node.appendChild(textNode)
-          
+          var xText = document.createTextNode('X');
+          deleteButton.appendChild(xText);
+          deleteButton.onclick = (function() {
+            deleteTask(task);
+          });
+          span.appendChild(textNode);
+          span.appendChild(deleteButton);
+          node.appendChild(span);
+                          
           switch(priority){
             case '1':
               document.getElementById('tasks1').appendChild(node);
@@ -123,7 +160,6 @@ function logTasks() {
     p1.then(function(userTasks){
         for(task in userTasks){
           var priority = userTasks[task];
-          console.log(task);
           if(!task) {
             message('Error: No task specified');
             return;

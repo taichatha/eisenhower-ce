@@ -11,13 +11,15 @@
       body {
         font-family: "Segoe UI", "Lucida Grande", Tahoma, sans-serif;
         font-size: 100%;
+        width: 600px;
+        height: 400px;
       }
       #status {
         /* avoid an excessively wide status text */
         white-space: pre;
         text-overflow: ellipsis;
         overflow: hidden;
-        max-width: 400px;
+        
       }
 
       #container {
@@ -25,20 +27,36 @@
       }
 
       ul[id^="tasks"] {
-        background-color: red;
+        width: 80%;
+        height:80%;
       }
 
       #title {
         position: absolute;
+        overflow: hidden;
+        text-align: center;
+        vertical-align: center;
+        font-size: 100px;
         z-index: -1;
       }
-
-      td {
-        /* avoid an excessively wide status text */
-        max-width: 400px;
-        max-height: 200px;
-        padding: 100px;
+      table {
+        height: 90%;
+        width: 100%;
       }
+      tbody {
+        height: 100%;
+      }
+
+      tr {
+        height: 50%;
+      }
+
+      /*td {
+        /* avoid an excessively wide status text */
+        /*width: 800px;*/
+        /*height: 400px;*/
+        
+      /*}*/
       td #title {
       	opacity: .25;
       }
@@ -64,26 +82,34 @@
 	    	</select>
 	    	<button id="submit" type="submit">Add</button>
 	    </input> 	
-      <div id='example'></div>
-    	<table>
+      <div id='errors'></div>
+    	<table class="fixed">
     		<tr>
-    			<td class="container" id='1'>
-    				<div id="title">1</div>
-    				<ul id="tasks1"></ul>
+    			<td id='1'>
+    				<div class="container">
+              <div id="title">1</div>
+              <ul id="tasks1"></ul>
+            </div>
     			</td>
-    			<td class="container" id='2' >
-    				<div id="title">2</div>
-    				<div id="tasks2"></div>
+    			<td id='2' >
+    				<div class="container">
+              <div id="title">2</div>
+    				  <ul id="tasks2"></ul>
+            </div>
     			</td>
-			</tr>
+  			</tr>
     		<tr>
-    			<td class="container" id='3' >
-    				<div id="title">3</div>
-    				<div id="tasks3"></div>
+    			<td id='3' >
+    				<div class="container">
+              <div id="title">3</div>
+    				  <ul id="tasks3"></ul>
+            </div>
     			</td>
     			<td class="container" id='4'>
-    				<div id="title">4</div>
-    				<div id="tasks4"></div>
+    				<div class="container">
+              <div id="title">4</div>
+    				  <ul id="tasks4"></ul>
+            </div>  
     			</td>
     		</tr>
 
