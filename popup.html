@@ -61,6 +61,39 @@
       	opacity: .25;
       }
 
+      div #one  {
+        float: left;
+        height: 300px;
+        width: 50%;
+      }
+
+      div #two {
+        float: right;
+        height: 300px;
+        width: 50%;
+      }
+
+      div #three {
+        float: left;
+        height: 300px;
+        width: 50%;
+      }
+
+      div #four {
+        float: right;
+        height: 300px;
+        width: 50%;
+      }
+
+      div #container {
+        padding: 50px;
+      }
+
+      .row {
+        float: left;
+        width: 100%;
+      }
+
     </style>
 
     <!--
@@ -81,9 +114,34 @@
 	    		<option>4</option>
 	    	</select>
 	    	<button id="submit" type="submit">Add</button>
-	    </input> 	
+	    </input> 
       <div id='errors'></div>
-    	<table class="fixed">
+      <div class="table">
+        <div class="row">
+          <div id="one" class="container">
+            <div id="title">1</div>
+            <ul id="tasks1"></ul>
+          </div>
+          
+          <div id="two" class="container">
+            <div id="title">2</div>
+            <ul id="tasks2"></ul>
+          </div>
+        </div>
+        <div class="row">
+          <div id="three" class="container">
+            <div id="title">3</div>
+            <ul id="tasks3"></ul>
+          </div>  
+          
+          <div id="four" class="container">
+            <div id="title">4</div>
+            <ul id="tasks4"></ul>
+          </div>  
+        </div>
+      </div>
+        
+      <!-- <table class="fixed">
     		<tr>
     			<td id='1'>
     				<div class="container">
@@ -113,7 +171,7 @@
     			</td>
     		</tr>
 
-    	</table>
+    	</table> -->
     </div>
     <img id="image-result" hidden>
   </body>

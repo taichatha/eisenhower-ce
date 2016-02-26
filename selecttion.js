@@ -29,7 +29,6 @@ function addTask() {
     span.appendChild(textNode);
     span.appendChild(deleteButton);
     node.appendChild(span);
-                
     switch(priority){
         case '1':
           document.getElementById('tasks1').appendChild(node);
@@ -68,6 +67,7 @@ chrome.storage.onChanged.addListener(function(changes, namespace) {
 
 function deleteTask(toDeleteTask) {
   //Remove element from ui
+  console.log(toDeleteTask);
   var removeElementFromUI = new Promise(
     function(resolve, reject) {
       chrome.storage.sync.get(toDeleteTask, function(result){
@@ -88,9 +88,39 @@ function deleteTask(toDeleteTask) {
       })
   );
   document.getElementById('errors').innerHTML = "";
+  reloadDeleteButtons();
 }
 
+function reloadDeleteButtons() {
+  var p1 = new Promise(
+    function(resolve, reject) {
+      chrome.storage.sync.get(null, function(result) {
+        resolve(result);
+      });
+    });
+  p1.then(function(userTasks){
+    return new Promise(
+      function(resolve,reject) {
+        for(task in userTasks) {
+          var priority = userTasks[task];
+          if(!task) {
+            message('Error: No task specified');
+            return;
+          }
+          if(!priority){
+            message('Error: No Priority specified');
+            return;
+          }
+          document.getElementById(priority+task).getElementByTagName("button").onclick(
+            function() {
+              deleteTask(task);
+            });
+        }
 
+      });
+  });
+
+};
 
 
 function loadUserData() {
@@ -101,85 +131,63 @@ function loadUserData() {
             });
         });
     p1.then(function(userTasks){
-        for(task in userTasks){
-          var priority = userTasks[task];
-          if(!task) {
-            message('Error: No task specified');
-            return;
-          }
-          if(!priority){
-            message('Error: No Priority specified');
-            return;
-          }
-
-
-          var node = document.createElement("li");
-          node.setAttribute('id', priority+task);
-          var span = document.createElement("span");
-          var deleteButton = document.createElement("button");
-          var textNode = document.createTextNode(task);
-          var xText = document.createTextNode('X');
-          deleteButton.appendChild(xText);
-          deleteButton.onclick = (function() {
-            deleteTask(task);
+        return new Promise(
+          function(resolve, reject) {
+                    console.log(userTasks);
+                    for(task in userTasks){
+                      var priority = userTasks[task];
+                      if(!task) {
+                        message('Error: No task specified');
+                        return;
+                      }
+                      if(!priority){
+                        message('Error: No Priority specified');
+                        return;
+                      }
+                      var node = document.createElement("li");
+                      node.setAttribute('id', priority+task);
+                      var span = document.createElement("span");
+                      var deleteButton = document.createElement("button");
+                      var textNode = document.createTextNode(task);
+                      var xText = document.createTextNode('X');
+                      deleteButton.appendChild(xText);
+                      deleteButton.onclick = (function() { 
+                          deleteTask(task);          
+                      });
+                      span.appendChild(textNode);
+                      span.appendChild(deleteButton);
+                      node.appendChild(span);                                    
+                      switch(priority){
+                        case '1':
+                          document.getElementById('tasks1').appendChild(node);
+                          break;
+                        case '2':
+                          document.getElementById('tasks2').appendChild(node);
+                          break;
+                        case '3':
+                          document.getElementById('tasks3').appendChild(node);
+                          break;
+                        case '4':
+                          document.getElementById('tasks4').appendChild(node);
+                          break;
+                      }
+                    
+                    }
+                    resolve();                  
           });
-          span.appendChild(textNode);
-          span.appendChild(deleteButton);
-          node.appendChild(span);
-                          
-          switch(priority){
-            case '1':
-              document.getElementById('tasks1').appendChild(node);
-              break;
-            case '2':
-              document.getElementById('tasks2').appendChild(node);
-              break;
-            case '3':
-              document.getElementById('tasks3').appendChild(node);
-              break;
-            case '4':
-              document.getElementById('tasks4').appendChild(node);
-              break;
-          }
-        }
-
     })
     .catch(
         // Log the rejection reason
         function(reason) {
             console.log('Handle rejected promise ('+reason+') here.');
         });
+    reloadDeleteButtons();
 }
-function logTasks() {
-  var p1 = new Promise(
-        function(resolve, reject) {
-            chrome.storage.sync.get(null, function(result) {
-              resolve(result);
-            });
-        });
-    p1.then(function(userTasks){
-        for(task in userTasks){
-          var priority = userTasks[task];
-          if(!task) {
-            message('Error: No task specified');
-            return;
-          }
-          if(!priority){
-            message('Error: No Priority specified');
-            return;
-          }
-        }
-    })
-    .catch(
-        // Log the rejection reason
-        function(reason) {
-            console.log('Handle rejected promise ('+reason+') here.');
-        });
-} 
 
 document.addEventListener('DOMContentLoaded', function() {
   loadUserData();
   document.getElementById("submit").addEventListener("click", addTask);
+  // document.getElementById("log").addEventListener("click", logLastDelete);
 
 });
 
